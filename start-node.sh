@@ -11,5 +11,5 @@ cd $EXEC
 #./$node run --chain $chain --base-path $base --farmer --listen-on /ip4/0.0.0.0/tcp/$port --rpc-listen-on 127.0.0.1:$wsport \
 #    --in-peers $peers --out-peers $peers --name $name &> ~/logs/subspace_node$id &
 
-./$node run --chain $CHAIN --base-path "$BASE" --name "$NAME" --farmer &> ~/logs/$folder.node &
+./$node run --chain $CHAIN --base-path "$BASE" --name "$NAME" --farmer --listen-on /ip4/0.0.0.0/tcp/$PORT --rpc-listen-on 127.0.0.1:$WS &> ~/logs/$folder.node &
 tail -f ~/logs/$folder.node
