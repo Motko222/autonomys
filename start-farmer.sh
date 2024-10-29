@@ -5,9 +5,9 @@ folder=$(echo $path | awk -F/ '{print $NF}')
 source /root/scripts/$folder/config
 farmer=$(ls $EXEC | grep subspace-farmer)
 
-echo "Starting farmer $folder ($farmer $BASE $REWARD $DISKS)"
+echo "Starting farmer $folder ($farmer $RPC $REWARD $DISKS)"
 cd $EXEC
 
 #./$farmer farm --node-rpc-url $rpc --reward-address $reward path=$base,size=$size &>> ~/logs/subspace_farmer$id &
 
-./$farmer farm --reward-address $REWARD $DISKS &>>~/logs/$folder.farmer &
+./$farmer farm --node-rpc-url $RPC --reward-address $REWARD $DISKS &>>~/logs/$folder.farmer &
