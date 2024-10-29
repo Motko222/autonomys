@@ -1,14 +1,6 @@
 #!/bin/bash
 
-if [ -z $1 ]
-  then 
-    echo "Running farmers:"
-    ps aux | grep subspace-farmer | grep -v grep | awk 'match($0, /subspace[0-9]|subspace[0-9][0-9]/) {print substr($0, RSTART, RLENGTH)}'  | sed 's/subspace//g'
-    echo "------------------------"
-    read -p "Farmer?  " id
-    echo "------------------------"
-  else 
-    id=$1 
-  fi
+path=$(cd -- $(dirname -- "${BASH_SOURCE[0]}") && pwd) 
+folder=$(echo $path | awk -F/ '{print $NF}')
 
-tail -f ~/logs/subspace_farmer$id
+tail -f ~/logs/$folder.farmer
