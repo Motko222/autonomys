@@ -13,30 +13,16 @@ min_conv () {
  echo $out
 }
 
-if [ -z $1 ]
-  then 
-    echo "Running nodes:"
-    ps aux | grep subspace-node | grep -v grep | awk 'match($0, /subspace[0-9]|subspace[0-9][0-9]/) {print substr($0, RSTART, RLENGTH)}' | sed 's/subspace//g'
-    echo "------------------------"
-    read -p "Node?  " id
-    echo "------------------------"
-  else 
-    id=$1
-  fi
-
-source ~/scripts/subspace/config/env
-source ~/scripts/subspace/config/node$id
+source ~/scripts/$folder/config
 source ~/.bash_profile
 
-nlog=~/logs/subspace_node$id
-flog=~/logs/subspace_farmer$id
+nlog=~/logs/$folder.node
+flog=~/logs/$folder.farmer
 
-fpid=$(ps aux | grep -w $base | grep subspace-farmer-ubuntu | awk '{print $2}')
-npid=$(ps aux | grep -w $base | grep subspace-node-ubuntu | awk '{print $2}')
-#chain=$(cat $nlog | grep "Chain specification" | tail -1 | awk -F 'Subspace ' '{print $2}')
+fpid=$(ps aux | grep -w $BASE | grep subspace-farmer-ubuntu | awk '{print $2}')
+npid=$(ps aux | grep -w $BASE | grep subspace-node-ubuntu | awk '{print $2}')
 network=testnet
-group=node
-owner=$OWNER
+chain=$CHAIN
 
 currentblock=$(curl -s -H "Content-Type: application/json" -d '{"id":1, "jsonrpc":"2.0", "method": "system_syncState", "params":[]}' http://localhost:$wsport | jq -r ".result.currentBlock")
 if [ -z $currentblock ]; then currentblock=0; fi
@@ -111,34 +97,9 @@ if [ -z $npid ]
     message="node not running"
 fi
 
-#echo "updated:           " $(date +'%y-%m-%d %H:%M')
-#echo "chain:             " $chain
-#echo "status:            " $status
-#echo "last_block_time:   " $bdate
-#echo "last_block_age:    " $(min_conv $bmin)
-#echo "node_height:       " $currentblock
-#echo "network_height:    " $bestblock
-#echo "peers:             " $peers
-#echo "last_reward_time:  " $rdate
-#echo "last_reward_age:   " $(min_conv $rmin)
-#echo "rewards_daily:     " $rew1 $rew2 $rew3 $rew4
-#echo "reward_address:    " $reward
-#echo "plot_size:         " $size
-#echo "folder_size:       " $folder
-#echo "base_folder:       " $base
-#echo "farmer_process:    " $fpid
-#echo "node_process:      " $npid
-#echo "archive_node:      " $archive
-#echo "version:           " $version
-#echo "balance:           " $balance
-#echo "type:              " $type
-#echo "message:              " $message
-
-id="subspace-"$id
-
 cat << EOF
 {
-  "id":"$id",
+  "id":"$folder",
   "machine":"$MACHINE",
   "chain":"$chain",
   "version":"version",
@@ -165,6 +126,6 @@ then
   --header "Content-Type: text/plain; charset=utf-8" \
   --header "Accept: application/json" \
   --data-binary "
-    report,id=$id,machine=$MACHINE,grp=$group,owner=$owner status=\"$status\",message=\"$message\",version=\"$version\",url=\"$url\",chain=\"$chain\",network=\"$network\" $(date +%s%N) 
+    report,id=$folder,machine=$MACHINE,grp=node,owner=$OWNER status=\"$status\",message=\"$message\",version=\"$version\",url=\"$url\",chain=\"$chain\",network=\"$network\" $(date +%s%N) 
     "
 fi
