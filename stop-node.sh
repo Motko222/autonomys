@@ -1,3 +1,3 @@
 #!/bin/bash
 
-pkill subspace-node
+systemctl stop autonomys-node.service
