@@ -2,11 +2,6 @@
 
 source ~/scripts/subspace/config/env
 
-if [ ! -d $ssexec ] 
-  then
-    mkdir $ssexec
-fi
-
 read -p "Sure? " c
 case $c in
   y)
