@@ -13,11 +13,13 @@ min_conv () {
  echo $out
 }
 
-source ~/scripts/$folder/config
-source ~/.bash_profile
-json=~/logs/report-$folder
-nlog=~/logs/$folder.node
-flog=~/logs/$folder.farmer
+path=$(cd -- $(dirname -- "${BASH_SOURCE[0]}") && pwd) 
+folder=$(echo $path | awk -F/ '{print $NF}')
+source /root/scripts/$folder/config
+source /root/.bash_profile
+json=/root/logs/report-$folder
+nlog=/root/logs/$folder.node
+flog=/root/logs/$folder.farmer
 
 fpid=$(ps aux | grep -w $BASE | grep subspace-farmer-ubuntu | awk '{print $2}')
 npid=$(ps aux | grep -w $BASE | grep subspace-node-ubuntu | awk '{print $2}')
