@@ -15,7 +15,7 @@ min_conv () {
 
 source ~/scripts/$folder/config
 source ~/.bash_profile
-
+json=~/logs/report-$folder
 nlog=~/logs/$folder.node
 flog=~/logs/$folder.farmer
 
@@ -24,10 +24,10 @@ npid=$(ps aux | grep -w $BASE | grep subspace-node-ubuntu | awk '{print $2}')
 network=testnet
 chain=$CHAIN
 
-currentblock=$(curl -s -H "Content-Type: application/json" -d '{"id":1, "jsonrpc":"2.0", "method": "system_syncState", "params":[]}' http://localhost:$WS | jq -r ".result.currentBlock")
+currentblock=$(curl -s -H "Content-Type: application/json" -d '{"id":1, "jsonrpc":"2.0", "method": "system_syncState", "params":[]}' http://localhost:$wsport | jq -r ".result.currentBlock")
 if [ -z $currentblock ]; then currentblock=0; fi
 #bestblock=$(curl -s -H  POST 'https://subspace.api.subscan.io/api/scan/metadata' --header 'Content-Type: application/json' --header 'X-API-Key: $apiKey' | jq -r .data.blockNum )
-bestblock=$(curl -s -H "Content-Type: application/json" -d '{"id":1, "jsonrpc":"2.0", "method": "system_syncState", "params":[]}' http://localhost:$WS | jq -r ".result.highestBlock")
+bestblock=$(curl -s -H "Content-Type: application/json" -d '{"id":1, "jsonrpc":"2.0", "method": "system_syncState", "params":[]}' http://localhost:$wsport | jq -r ".result.highestBlock")
 if [ -z $bestblock ]; then bestblock=0; fi
 diffblock=$(($bestblock-$currentblock))
 plotted=$(cat $flog | grep --line-buffered --text "Plotting sector " | tail -1 | awk -F "Plotting sector " '{print $2}' | awk '{print $1}' | sed 's/(\|)//g')
@@ -52,17 +52,15 @@ rew2=$(cat $flog | grep -a 'Successfully signed reward hash' | grep -c $(date -d
 rew3=$(cat $flog | grep -a 'Successfully signed reward hash' | grep -c $(date -d "2 days ago" '+%Y-%m-%d'))
 rew4=$(cat $flog | grep -a 'Successfully signed reward hash' | grep -c $(date -d "3 days ago" '+%Y-%m-%d'))
 #address=${address1:0:4}...${address1: -4}
-size=$(ps aux | grep -w $BASE | grep subspace-farmer-ubuntu | awk -F 'size=' '{print $2}'| awk '{print $1}')
-folder=$(du -hs $BASE | awk '{print $1}')
-archive=$(ps aux | grep -w $BASE | grep subspace-node-ubuntu | grep -c archive)
+size=$(ps aux | grep -w $base | grep subspace-farmer-ubuntu | awk -F 'size=' '{print $2}'| awk '{print $1}')
+folder=$(du -hs $base | awk '{print $1}')
+archive=$(ps aux | grep -w $base | grep subspace-node-ubuntu | grep -c archive)
 #version=$(cat $nlog | grep version | awk '{print $5}' | head -1 | cut -d "-" -f 1 )
 version=$(ps aux | grep subspace-node-ubuntu | grep $base | awk -F "2024-" '{print $2}' | awk '{print $1}')
 balance=$(curl -s POST 'https://subspace.api.subscan.io/api/scan/account/tokens' --header 'Content-Type: application/json' \
- --header 'X-API-Key: '$API'' --data-raw '{ "address": "'$REWARD'" }' | jq -r '.data.native' | jq -r '.[].balance' | awk '{print $1/1000000000000000000}')
+ --header 'X-API-Key: '$apiKey'' --data-raw '{ "address": "'$reward'" }' | jq -r '.data.native' | jq -r '.[].balance' | awk '{print $1/1000000000000000000}')
 
-if [ -z $balance ]
-  then balance="0"
-fi
+[ -z $balance ] && balance="0"
 
 if [ $diffblock -le 5 ]
   then 
@@ -97,35 +95,29 @@ if [ -z $npid ]
     message="node not running"
 fi
 
-cat << EOF
+cat >$json << EOF
 {
-  "id":"$folder",
-  "machine":"$MACHINE",
-  "chain":"$chain",
-  "version":"version",
-  "status":"$status",
-  "message":"$message",
-  "fpid":"$fpid",
-  "npid":"$npid",
-  "peers":"$peers",
-  "syncSpeed":"$syncSpeed", 
-  "plotted":"$plotted",
-  "bestblock":"$bestblock",
-  "currentblock":"$currentblock",
-  "balance":"$balance",
-  "updated":"$(date --utc +%FT%TZ)"
+  "updated":"$(date --utc +%FT%TZ)",
+  "measurement":"report",
+  "tags": {
+     "id":"$ID",
+     "machine":"$MACHINE",
+     "grp":"da",
+     "owner":"$OWNER"
+  },
+  "fields": {
+     "version":"$version",
+     "status":"$status",
+     "message":"$message",
+     "fpid":"$fpid",
+     "npid":"$npid",
+     "peers":"$peers",
+     "syncSpeed":"$syncSpeed", 
+     "plotted":"$plotted",
+     "bestblock":"$bestblock",
+     "currentblock":"$currentblock",
+     "balance":"$balance"
+  }
 }
 EOF
-
-# send data to influxdb
-if [ ! -z $INFLUX_HOST ]
-then
- curl --request POST \
- "$INFLUX_HOST/api/v2/write?org=$INFLUX_ORG&bucket=$INFLUX_BUCKET&precision=ns" \
-  --header "Authorization: Token $INFLUX_TOKEN" \
-  --header "Content-Type: text/plain; charset=utf-8" \
-  --header "Accept: application/json" \
-  --data-binary "
-    report,id=$folder,machine=$MACHINE,grp=node,owner=$OWNER status=\"$status\",message=\"$message\",version=\"$version\",url=\"$url\",chain=\"$chain\",network=\"$network\" $(date +%s%N) 
-    "
-fi
+cat $json | jq
