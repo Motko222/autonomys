@@ -1,3 +1,3 @@
 #!/bin/bash
 
-journalctl -n 200 -u autonomys-node.service -f --no-hostname -o cat
+journalctl -n 200 -u autonomys-farmer.service -f --no-hostname -o cat
