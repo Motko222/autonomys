@@ -31,8 +31,8 @@ if [ -z $currentblock ]; then currentblock=0; fi
 bestblock=$(curl -s -H "Content-Type: application/json" -d '{"id":1, "jsonrpc":"2.0", "method": "system_syncState", "params":[]}' http://localhost:$WS | jq -r ".result.highestBlock")
 if [ -z $bestblock ]; then bestblock=0; fi
 diffblock=$(($bestblock-$currentblock))
-plotted0=$(cat $flog | grep --line-buffered --text "Plotting sector " | grep -a "farm_index=0" | tail -1 | awk -F "Plotting sector " '{print $2}' | awk '{print $1}' | sed 's/(\|)//g')
-plotted1=$(cat $flog | grep --line-buffered --text "Plotting sector " | grep -a "farm_index=1" | tail -1 | awk -F "Plotting sector " '{print $2}' | awk '{print $1}' | sed 's/(\|)//g')
+plotted0=$(cat $flog | grep --line-buffered --text "Plotting sector " | grep --line-buffered --text "farm_index=0" | tail -1 | awk -F "Plotting sector " '{print $2}' | awk '{print $1}' | sed 's/(\|)//g')
+plotted1=$(cat $flog | grep --line-buffered --text "Plotting sector " | grep --line-buffered --text "farm_index=1" | tail -1 | awk -F "Plotting sector " '{print $2}' | awk '{print $1}' | sed 's/(\|)//g')
 
 temp1=$(grep --line-buffered --text -E "Idle|Syncing|Preparing" $nlog | tail -1)
 bdate=$(echo $temp1 | awk '{print $1}')T$(echo $temp1 | awk '{print $2}').000+0200
