@@ -110,6 +110,8 @@ cat >$json << EOF
      "version":"$version",
      "status":"$status",
      "message":"$message",
+     "network":"$network",
+     "chain":"$chain",
      "fpid":"$fpid",
      "npid":"$npid",
      "peers":"$peers",
