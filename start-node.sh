@@ -12,3 +12,4 @@ cd $EXEC
 #    --in-peers $peers --out-peers $peers --name $name &> ~/logs/subspace_node$id &
 
 ./$node run --chain $CHAIN --base-path "$BASE" --name "$NAME" --farmer &> ~/logs/$folder.node &
+tail -f ~/logs/$folder.node
