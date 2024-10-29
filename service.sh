@@ -26,7 +26,7 @@ Description=autonomys-farmer
 After=network.target
 [Service]
 User=root
-ExecStart=$EXEC/$farmer farm --reward-address $REWARD $DISKS --farm-during-initial-plotting
+ExecStart=$EXEC/$farmer farm --reward-address $REWARD $DISKS
 Restart=always
 RestartSec=30
 [Install]
