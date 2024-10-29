@@ -1,6 +1,9 @@
 #!/bin/bash
 
-source ~/scripts/subspace/config/env
+path=$(cd -- $(dirname -- "${BASH_SOURCE[0]}") && pwd) 
+folder=$(echo $path | awk -F/ '{print $NF}')
+
+source ~/scripts/$folder/config
 
 read -p "Sure? " c
 case $c in
