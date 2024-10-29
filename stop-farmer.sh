@@ -1,3 +1,3 @@
 #!/bin/bash
 
-pkill subspace-farmer
+systemctl stop autonomys-farmer.service
