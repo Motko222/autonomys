@@ -20,9 +20,11 @@ source /root/.bash_profile
 json=/root/logs/report-$folder
 nlog=/root/logs/$folder.node
 flog=/root/logs/$folder.farmer
+node=$(ls $EXEC | grep subspace-node)
+farmer=$(ls $EXEC | grep subspace-farmer)
 
-fpid=$(ps aux | grep -w $BASE | grep subspace-farmer-ubuntu | awk '{print $2}')
-npid=$(ps aux | grep -w $BASE | grep subspace-node-ubuntu | awk '{print $2}')
+fpid=$(ps aux | grep -w $BASE | grep $farmer | awk '{print $2}')
+npid=$(ps aux | grep -w $BASE | grep $node | awk '{print $2}')
 network=testnet
 chain=$CHAIN
 
