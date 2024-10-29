@@ -11,3 +11,4 @@ cd $EXEC
 #./$farmer farm --node-rpc-url $rpc --reward-address $reward path=$base,size=$size &>> ~/logs/subspace_farmer$id &
 
 ./$farmer farm --reward-address $REWARD $DISKS &>>~/logs/$folder.farmer &
+tail -f ~/logs/$folder.farmer
