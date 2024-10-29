@@ -3,13 +3,12 @@
 path=$(cd -- $(dirname -- "${BASH_SOURCE[0]}") && pwd) 
 folder=$(echo $path | awk -F/ '{print $NF}')
 source ~/scripts/$folder/config
+node=$(ls $EXEC | grep subspace-node)
 
-[ ! -d $BASE ] && mkdir $BASE
-
-echo "Starting node $folder ($BASE $NODE $CHAIN $PORT $WS $NAME $PEERS)"
+echo "Starting node $folder ($BASE $node $CHAIN $NAME $PEERS)"
 cd $EXEC
 
 #./$node run --chain $chain --base-path $base --farmer --listen-on /ip4/0.0.0.0/tcp/$port --rpc-listen-on 127.0.0.1:$wsport \
 #    --in-peers $peers --out-peers $peers --name $name &> ~/logs/subspace_node$id &
 
-./$NODE run --chain $CHAIN --base-path "$BASE" --name "$NAME" --farmer &> ~/logs/$folder.node &
+./$node run --chain $CHAIN --base-path "$BASE" --name "$NAME" --farmer &> ~/logs/$folder.node &
