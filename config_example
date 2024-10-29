@@ -5,6 +5,7 @@ CHAIN=taurus
 API=xxx
 
 NAME=mynode1
+DISKS="path=/media/ssd1,size=100GiB path=/media/ssd2,size=10T path=/media/ssd3,size=10T"
 BASE=/root/subspace1
 SIZE=512G
 PEERS=25
