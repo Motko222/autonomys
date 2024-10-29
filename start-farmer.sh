@@ -3,10 +3,11 @@
 path=$(cd -- $(dirname -- "${BASH_SOURCE[0]}") && pwd) 
 folder=$(echo $path | awk -F/ '{print $NF}')
 source /root/scripts/$folder/config
+farmer=$(ls $EXEC | grep subspace-farmer)
 
-echo "Starting farmer $folder ($BASE $REWARD $DISKS)"
+echo "Starting farmer $folder ($farmer $BASE $REWARD $DISKS)"
 cd $EXEC
 
 #./$farmer farm --node-rpc-url $rpc --reward-address $reward path=$base,size=$size &>> ~/logs/subspace_farmer$id &
 
-./$FARMER farm --reward-address $REWARD $DISKS ~/logs/$folder.farmer &
+./$farmer farm --reward-address $REWARD $DISKS &>>~/logs/$folder.farmer &
