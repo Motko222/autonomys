@@ -1,6 +1,3 @@
 #!/bin/bash
 
-path=$(cd -- $(dirname -- "${BASH_SOURCE[0]}") && pwd) 
-folder=$(echo $path | awk -F/ '{print $NF}')
-
-tail -f ~/logs/$folder.node
+journalctl -n 200 -u autonomys-node.service -f --no-hostname -o cat
