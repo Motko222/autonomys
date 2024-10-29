@@ -54,7 +54,6 @@ rew3=$(cat $flog | grep -a 'Successfully signed reward hash' | grep -c $(date -d
 rew4=$(cat $flog | grep -a 'Successfully signed reward hash' | grep -c $(date -d "3 days ago" '+%Y-%m-%d'))
 #address=${address1:0:4}...${address1: -4}
 size=$(ps aux | grep -w $BASE | grep subspace-farmer-ubuntu | awk -F 'size=' '{print $2}'| awk '{print $1}')
-folder=$(du -hs $BASE | awk '{print $1}')
 archive=$(ps aux | grep -w $BASE | grep subspace-node-ubuntu | grep -c archive)
 #version=$(cat $nlog | grep version | awk '{print $5}' | head -1 | cut -d "-" -f 1 )
 version=$(ps aux | grep subspace-node-ubuntu | grep $BASE | awk -F "2024-" '{print $2}' | awk '{print $1}')
