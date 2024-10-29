@@ -1,21 +1,12 @@
 #!/bin/bash
 
-if [ -z $1 ]
-  then 
-    echo "Running nodes:"
-    ps aux | grep subspace-node | grep -v grep | awk 'match($0, /subspace[0-9]|subspace[0-9][0-9]/) {print substr($0, RSTART, RLENGTH)}' | sed 's/subspace//g'
-    echo "------------------------"
-    echo "Running farmers:"
-    ps aux | grep subspace-farmer | grep -v grep | awk 'match($0, /subspace[0-9]|subspace[0-9][0-9]/) {print substr($0, RSTART, RLENGTH)}' | sed 's/subspace//g'
-    echo "------------------------"
-    read -p "Farmer?  " id
-    echo "------------------------"
-  else 
-    id=$1
-fi
+path=$(cd -- $(dirname -- "${BASH_SOURCE[0]}") && pwd) 
+folder=$(echo $path | awk -F/ '{print $NF}')
+source /root/scripts/$folder/config
 
-source ~/scripts/subspace/config/env
-source ~/scripts/subspace/config/node$id
-echo "Starting farmer $id ($base $rpc $reward $size)"
-cd $ssexec;
-./$farmer farm --node-rpc-url $rpc --reward-address $reward path=$base,size=$size &>> ~/logs/subspace_farmer$id &
+echo "Starting farmer $folder ($BASE $REWARD $DISKS)"
+cd $EXEC
+
+#./$farmer farm --node-rpc-url $rpc --reward-address $reward path=$base,size=$size &>> ~/logs/subspace_farmer$id &
+
+./$FARMER farm --reward-address $REWARD $DISKS ~/logs/$folder.farmer &
