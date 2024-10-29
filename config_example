@@ -1,0 +1,15 @@
+ssexec=/root/autonomys
+node=$(ls $ssexec | grep subspace-node)
+farmer=$(ls $ssexec | grep subspace-farmer)
+chain=taurus
+apiKey=xxx
+
+name=mynode1
+base=/root/subspace1
+type=full
+size=512G
+peers=25
+reward=xxx
+port=30333
+wsport=$(($port+10000))
+rpc="ws://127.0.0.1:"$wsport
