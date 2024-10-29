@@ -23,8 +23,8 @@ flog=/root/logs/$folder.farmer
 node=$(ls $EXEC | grep subspace-node)
 farmer=$(ls $EXEC | grep subspace-farmer)
 
-fpid=$(ps aux | grep -w $BASE | grep $farmer | awk '{print $2}')
-npid=$(ps aux | grep -w $BASE | grep $node | awk '{print $2}')
+fpid=$(ps aux | grep $farmer | awk '{print $2}')
+npid=$(ps aux | grep $node | awk '{print $2}')
 network=testnet
 chain=$CHAIN
 
