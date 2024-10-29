@@ -1,26 +1,15 @@
 #!/bin/bash
 
-if [ -z $1 ]
-  then 
-    echo "Configured nodes:"
-    ls ~/scripts/subspace/config | grep node | grep -v sample | sed 's/node//g'
-    echo "------------------------"
-    read -p "Node?  " id
-    echo "------------------------"
-  else 
-    id=$1
-  fi
+path=$(cd -- $(dirname -- "${BASH_SOURCE[0]}") && pwd) 
+folder=$(echo $path | awk -F/ '{print $NF}')
+source ~/scripts/$folder/config
 
-source ~/scripts/subspace/config/env
-source ~/scripts/subspace/config/node$id
+[ ! -d $BASE ] && mkdir $BASE
 
-if [ ! -d $base ] 
-  then
-    mkdir $base
-fi
+echo "Starting node $folder ($BASE $NODE $CHAIN $PORT $WS $NAME $PEERS)"
+cd $EXEC
 
-echo "Starting node $id ($base $node $type $chain $base $port $wsport $name $peers)"
-cd $ssexec
+#./$node run --chain $chain --base-path $base --farmer --listen-on /ip4/0.0.0.0/tcp/$port --rpc-listen-on 127.0.0.1:$wsport \
+#    --in-peers $peers --out-peers $peers --name $name &> ~/logs/subspace_node$id &
 
- ./$node run --chain $chain --base-path $base --farmer --listen-on /ip4/0.0.0.0/tcp/$port --rpc-listen-on 127.0.0.1:$wsport \
-     --in-peers $peers --out-peers $peers --name $name &> ~/logs/subspace_node$id &
+./$NODE run --chain $CHAIN --base-path "$BASE" --name "$NAME" --farmer &> ~/logs/$folder &
