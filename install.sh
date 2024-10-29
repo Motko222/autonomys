@@ -7,12 +7,9 @@ source ~/scripts/$folder/config
 
 read -p "Sure? " c
 case $c in
-  y)
-    if [ ! -d $ssexec ] 
-      then
-        mkdir $ssexec
-    fi
-    cd $ssexec
+  y|Y)
+    [ ! -d $EXEC ] && mkdir $EXEC
+    cd $EXEC
     rm subspace-node* subspace-farmer*
     echo "Get links from here: https://docs.subspace.network/docs/protocol/substrate-cli"
     read -p "Node URL? " url
