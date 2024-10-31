@@ -5,8 +5,6 @@ folder=$(echo $path | awk -F/ '{print $NF}')
 source /root/scripts/$folder/config
 source /root/.bash_profile
 json=/root/logs/report-$folder
-nlog=/root/logs/$folder.node
-flog=/root/logs/$folder.farmer
 fpid=$(ps aux | grep subspace-farmer | grep -v grep | awk '{print $2}')
 npid=$(ps aux | grep subspace-node | grep -v grep | awk '{print $2}')
 network=testnet
@@ -18,16 +16,15 @@ currentblock=$(curl -s -H "Content-Type: application/json" -d '{"id":1, "jsonrpc
 bestblock=$(curl -s -H "Content-Type: application/json" -d '{"id":1, "jsonrpc":"2.0", "method": "system_syncState", "params":[]}' http://localhost:9944 | jq -r ".result.highestBlock")
 [ -z $bestblock ] && bestblock=0
 diffblock=$(($bestblock-$currentblock))
-plotted0=$(journalctl -u autonomys-farmer.service --no-hostname -o cat | grep --line-buffered --text "Plotting sector " | grep -a "farm_index=0" | tail -1 | awk -F "Plotting sector " '{print $2}' | awk '{print $1}' | sed 's/(\|)//g' | cut -d . -f 1)
-plotted1=$(journalctl -u autonomys-farmer.service --no-hostname -o cat | grep --line-buffered --text "Plotting sector " | grep -a "farm_index=1" | tail -1 | awk -F "Plotting sector " '{print $2}' | awk '{print $1}' | sed 's/(\|)//g' | cut -d . -f 1)
- 
+sync_speed=$(journalctl -u autonomys-node.service --no-hostname -o cat | grep -s "Syncing" | tail -1 | awk -F "Syncing" '{print $2}' | awk -F "," '{print $1}')
+
+plotted0=$(journalctl -n 100 -u autonomys-farmer.service --no-hostname -o cat | grep --line-buffered --text "Plotting sector " | grep -a "farm_index=0" | tail -1 | awk -F "Plotting sector " '{print $2}' | awk '{print $1}' | sed 's/(\|)//g' | cut -d . -f 1)
+plotted1=$(journalctl -n 100 -u autonomys-farmer.service --no-hostname -o cat | grep --line-buffered --text "Plotting sector " | grep -a "farm_index=1" | tail -1 | awk -F "Plotting sector " '{print $2}' | awk '{print $1}' | sed 's/(\|)//g' | cut -d . -f 1)
+
 rew1=$(journalctl -u autonomys-farmer.service --no-hostname -o cat | grep -a 'Successfully signed reward hash' | grep -c $(date -d "today" '+%Y-%m-%d'))
 rew2=$(journalctl -u autonomys-farmer.service --no-hostname -o cat | grep -a 'Successfully signed reward hash' | grep -c $(date -d "yesterday" '+%Y-%m-%d'))
 rew3=$(journalctl -u autonomys-farmer.service --no-hostname -o cat | grep -a 'Successfully signed reward hash' | grep -c $(date -d "2 days ago" '+%Y-%m-%d'))
 rew4=$(journalctl -u autonomys-farmer.service --no-hostname -o cat | grep -a 'Successfully signed reward hash' | grep -c $(date -d "3 days ago" '+%Y-%m-%d'))
-#address=${address1:0:4}...${address1: -4}
-archive=$(ps aux | grep -w $BASE | grep subspace-node-ubuntu | grep -c archive)
-#version=$(cat $nlog | grep version | awk '{print $5}' | head -1 | cut -d "-" -f 1 )
 version=$(ps aux | grep subspace-node-ubuntu | grep $BASE | awk -F "2024-" '{print $2}' | awk '{print $1}')
 balance=$(curl -s POST 'https://subspace.api.subscan.io/api/scan/account/tokens' --header 'Content-Type: application/json' \
  --header 'X-API-Key: '$API'' --data-raw '{ "address": "'$REWARD'" }' | jq -r '.data.native' | jq -r '.[].balance' | awk '{print $1/1000000000000000000}')
@@ -40,7 +37,7 @@ if [ $diffblock -le 5 ]
     message="rew $rew1-$rew2-$rew3-$rew4 bal $balance"
   else 
     status="warning"
-    message="sync $currentblock/$bestblock speed $syncSpeed"; 
+    message="sync $currentblock/$bestblock speed $sync_speed"; 
 fi
 
 if [ $plotted0 -lt 99 ] || [ $plotted1 -lt 99 ] || [ $plotted2 -lt 99 ] || [ $plotted3 -lt 99 ]
@@ -58,7 +55,7 @@ fi
 if [ -z $fpid ]
   then 
     status="warning"
-    message="farmer not running, sync $currentblock/$bestblock, $syncSpeed"
+    message="farmer not running, sync $currentblock/$bestblock, $sync_speed"
 fi
 
 if [ -z $npid ]
@@ -84,7 +81,7 @@ cat >$json << EOF
      "fpid":"$fpid",
      "npid":"$npid",
      "peers":"$peers",
-     "syncSpeed":"$syncSpeed", 
+     "sync_speed":"$sync_speed", 
      "plotted0":"$plotted0",
      "plotted1":"$plotted1",
      "bestblock":"$bestblock",
