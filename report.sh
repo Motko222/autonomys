@@ -31,8 +31,8 @@ currentblock=$(curl -s -H "Content-Type: application/json" -d '{"id":1, "jsonrpc
 bestblock=$(curl -s -H "Content-Type: application/json" -d '{"id":1, "jsonrpc":"2.0", "method": "system_syncState", "params":[]}' http://localhost:9944 | jq -r ".result.highestBlock")
 [ -z $bestblock ] && bestblock=0
 diffblock=$(($bestblock-$currentblock))
-plotted0=$(journalctl -u autonomys-farmer.service --no-hostname -o cat | grep --line-buffered --text "Plotting sector " | grep -a "farm_index=0" | tail -1 | awk -F "Plotting sector " '{print $2}' | awk '{print $1}' | sed 's/(\|)//g' | cut -d . -f 1))
-plotted1=$(journalctl -u autonomys-farmer.service --no-hostname -o cat | grep --line-buffered --text "Plotting sector " | grep -a "farm_index=1" | tail -1 | awk -F "Plotting sector " '{print $2}' | awk '{print $1}' | sed 's/(\|)//g' | cut -d . -f 1))
+plotted0=$(journalctl -u autonomys-farmer.service --no-hostname -o cat | grep --line-buffered --text "Plotting sector " | grep -a "farm_index=0" | tail -1 | awk -F "Plotting sector " '{print $2}' | awk '{print $1}' | sed 's/(\|)//g' | cut -d . -f 1)
+plotted1=$(journalctl -u autonomys-farmer.service --no-hostname -o cat | grep --line-buffered --text "Plotting sector " | grep -a "farm_index=1" | tail -1 | awk -F "Plotting sector " '{print $2}' | awk '{print $1}' | sed 's/(\|)//g' | cut -d . -f 1)
  
 
 #temp2=$(grep --line-buffered --text "Successfully signed reward hash" $flog | tail -1 | sed -r 's/\x1B\[(;?[0-9]{1,3})+[mGK]//g' )
