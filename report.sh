@@ -1,18 +1,5 @@
 #!/bin/bash
 
-min_conv () {
- a=$1
- case $a in
-  "")  out=" " ;;
-  "never") out="never" ;;
-  0) out="now" ;;
-  [1-9]|[1-9][0-9]|1[0-1][0-9]) out=$a"m" ;; #1-119
-  1[2-9][0-9]|[2-9][0-9][0-9]|1[0-9][0-9][0-9]|2[0-7][0-9][0-9]|28[0-7][0-9]) out=$((a/60))"h"  ;; #120-2879
-  *) out=$((a/60/24))"d" ;;
-  esac
- echo $out
-}
-
 path=$(cd -- $(dirname -- "${BASH_SOURCE[0]}") && pwd) 
 folder=$(echo $path | awk -F/ '{print $NF}')
 source /root/scripts/$folder/config
@@ -34,16 +21,6 @@ diffblock=$(($bestblock-$currentblock))
 plotted0=$(journalctl -u autonomys-farmer.service --no-hostname -o cat | grep --line-buffered --text "Plotting sector " | grep -a "farm_index=0" | tail -1 | awk -F "Plotting sector " '{print $2}' | awk '{print $1}' | sed 's/(\|)//g' | cut -d . -f 1)
 plotted1=$(journalctl -u autonomys-farmer.service --no-hostname -o cat | grep --line-buffered --text "Plotting sector " | grep -a "farm_index=1" | tail -1 | awk -F "Plotting sector " '{print $2}' | awk '{print $1}' | sed 's/(\|)//g' | cut -d . -f 1)
  
-
-#temp2=$(grep --line-buffered --text "Successfully signed reward hash" $flog | tail -1 | sed -r 's/\x1B\[(;?[0-9]{1,3})+[mGK]//g' )
-#if [ -z $temp2 ]
-#then
-# rmin="never";
-#else
-# rdate=$(echo $temp2 | awk '{print $1}');
-# rmin=$((($(date +%s)-$(date -d $rdate +%s))/60))
-#fi
-
 rew1=$(journalctl -u autonomys-farmer.service --no-hostname -o cat | grep -a 'Successfully signed reward hash' | grep -c $(date -d "today" '+%Y-%m-%d'))
 rew2=$(journalctl -u autonomys-farmer.service --no-hostname -o cat | grep -a 'Successfully signed reward hash' | grep -c $(date -d "yesterday" '+%Y-%m-%d'))
 rew3=$(journalctl -u autonomys-farmer.service --no-hostname -o cat | grep -a 'Successfully signed reward hash' | grep -c $(date -d "2 days ago" '+%Y-%m-%d'))
