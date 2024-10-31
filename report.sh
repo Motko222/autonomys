@@ -43,7 +43,7 @@ fi
 if [ $plotted0 -lt 99 ] || [ $plotted1 -lt 99 ] || [ $plotted2 -lt 99 ] || [ $plotted3 -lt 99 ]
   then 
     status="warning"
-    message="plotting $plotted0 $plotted1 $plotted2 $plotted3"
+    message="plot $plotted0 $plotted1 $plotted2 $plotted3 rew $rew1-$rew2-$rew3-$rew4"
 fi
 
 if [ $bestblock -eq 0 ]
