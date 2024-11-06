@@ -32,7 +32,7 @@ balance=$(curl -s POST 'https://subspace.api.subscan.io/api/scan/account/tokens'
 
 for (( i=0;i<$PLOTS;i++ ))
 do
-  plotted=$plotted" "$(journalctl -n 100 -u autonomys-farmer.service --no-hostname -o cat | grep --line-buffered --text "Plotting sector " | grep -a "farm_index="$i | tail -1 | awk -F "Plotting sector " '{print $2}' | awk '{print $1}' | sed 's/(\|)//g' | cut -d . -f 1)
+  plotted=$plotted $i=$(journalctl -n 100 -u autonomys-farmer.service --no-hostname -o cat | grep --line-buffered --text "Plotting sector " | grep -a "farm_index="$i | tail -1 | awk -F "Plotting sector " '{print $2}' | awk '{print $1}' | sed 's/(\|)//g' | cut -d . -f 1)%
 done
 
 [ -z $balance ] && balance="0"
