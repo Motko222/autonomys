@@ -18,8 +18,9 @@ bestblock=$(curl -s -H "Content-Type: application/json" -d '{"id":1, "jsonrpc":"
 diffblock=$(($bestblock-$currentblock))
 sync_speed=$(journalctl -u autonomys-node.service --no-hostname -o cat | grep -s "Syncing" | tail -1 | awk -F "Syncing" '{print $2}' | awk -F "," '{print $1}')
 
-plotted0=$(journalctl -n 100 -u autonomys-farmer.service --no-hostname -o cat | grep --line-buffered --text "Plotting sector " | grep -a "farm_index=0" | tail -1 | awk -F "Plotting sector " '{print $2}' | awk '{print $1}' | sed 's/(\|)//g' | cut -d . -f 1)
-plotted1=$(journalctl -n 100 -u autonomys-farmer.service --no-hostname -o cat | grep --line-buffered --text "Plotting sector " | grep -a "farm_index=1" | tail -1 | awk -F "Plotting sector " '{print $2}' | awk '{print $1}' | sed 's/(\|)//g' | cut -d . -f 1)
+#plotted0=$(journalctl -n 100 -u autonomys-farmer.service --no-hostname -o cat | grep --line-buffered --text "Plotting sector " | grep -a "farm_index=0" | tail -1 | awk -F "Plotting sector " '{print $2}' | awk '{print $1}' | sed 's/(\|)//g' | cut -d . -f 1)
+#plotted1=$(journalctl -n 100 -u autonomys-farmer.service --no-hostname -o cat | grep --line-buffered --text "Plotting sector " | grep -a "farm_index=1" | tail -1 | awk -F "Plotting sector " '{print $2}' | awk '{print $1}' | sed 's/(\|)//g' | cut -d . -f 1)
+plotted=
 
 rew1=$(journalctl -u autonomys-farmer.service --no-hostname -o cat | grep -a 'Successfully signed reward hash' | grep -c $(date -d "today" '+%Y-%m-%d'))
 rew2=$(journalctl -u autonomys-farmer.service --no-hostname -o cat | grep -a 'Successfully signed reward hash' | grep -c $(date -d "yesterday" '+%Y-%m-%d'))
@@ -28,6 +29,11 @@ rew4=$(journalctl -u autonomys-farmer.service --no-hostname -o cat | grep -a 'Su
 version=$(ps aux | grep subspace-node-ubuntu | grep $BASE | awk -F "2024-" '{print $2}' | awk '{print $1}')
 balance=$(curl -s POST 'https://subspace.api.subscan.io/api/scan/account/tokens' --header 'Content-Type: application/json' \
  --header 'X-API-Key: '$API'' --data-raw '{ "address": "'$REWARD'" }' | jq -r '.data.native' | jq -r '.[].balance' | awk '{print $1/1000000000000000000}')
+
+for (( i=0;i<$PLOTS;i++ ))
+do
+  plotted=$plotted" "$(journalctl -n 100 -u autonomys-farmer.service --no-hostname -o cat | grep --line-buffered --text "Plotting sector " | grep -a "farm_index="$i | tail -1 | awk -F "Plotting sector " '{print $2}' | awk '{print $1}' | sed 's/(\|)//g' | cut -d . -f 1)
+done
 
 [ -z $balance ] && balance="0"
 
@@ -43,7 +49,7 @@ fi
 if [ $plotted0 -lt 99 ] || [ $plotted1 -lt 99 ] || [ $plotted2 -lt 99 ] || [ $plotted3 -lt 99 ]
   then 
     status="warning"
-    message="plot $plotted0 $plotted1 $plotted2 $plotted3 rew $rew1-$rew2-$rew3-$rew4"
+    message="plot $plotted rew $rew1-$rew2-$rew3-$rew4"
 fi
 
 if [ $bestblock -eq 0 ]
@@ -84,8 +90,7 @@ cat >$json << EOF
      "npid":"$npid",
      "peers":"$peers",
      "sync_speed":"$sync_speed", 
-     "plotted0":"$plotted0",
-     "plotted1":"$plotted1",
+     "plotted":"$plotted",
      "bestblock":"$bestblock",
      "currentblock":"$currentblock",
      "balance":"$balance"
