@@ -13,7 +13,7 @@ Description=autonomys-node
 After=network.target
 [Service]
 User=root
-ExecStart=$EXEC/$node run --chain $CHAIN --base-path $BASE --name $NAME --farmer
+ExecStart=$EXEC/$node run --chain $CHAIN --base-path $BASE --name $NAME --farmer $FLAGS
 Restart=always
 RestartSec=30
 [Install]
