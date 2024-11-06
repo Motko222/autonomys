@@ -7,7 +7,7 @@ source /root/.bash_profile
 json=/root/logs/report-$folder
 fpid=$(ps aux | grep subspace-farmer | grep -v grep | awk '{print $2}')
 npid=$(ps aux | grep subspace-node | grep -v grep | awk '{print $2}')
-network=testnet
+network=$NETWORK
 chain=$CHAIN
 
 currentblock=$(curl -s -H "Content-Type: application/json" -d '{"id":1, "jsonrpc":"2.0", "method": "system_syncState", "params":[]}' http://localhost:9944 | jq -r ".result.currentBlock")
