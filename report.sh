@@ -40,16 +40,10 @@ done
 if [ $diffblock -le 5 ]
   then 
     status="ok"
-    message="rew $rew1-$rew2-$rew3-$rew4 bal $balance"
+    message="plot $plotted rew $rew1-$rew2-$rew3-$rew4 bal $balance"
   else 
     status="warning"
     message="sync $currentblock/$bestblock speed $sync_speed"; 
-fi
-
-if [ $plotted0 -lt 99 ] || [ $plotted1 -lt 99 ] || [ $plotted2 -lt 99 ] || [ $plotted3 -lt 99 ]
-  then 
-    status="warning"
-    message="plot $plotted rew $rew1-$rew2-$rew3-$rew4"
 fi
 
 if [ $bestblock -eq 0 ]
