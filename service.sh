@@ -13,7 +13,7 @@ Description=autonomys-node
 After=network.target
 [Service]
 User=root
-ExecStart=$EXEC/$node run --chain $CHAIN --base-path $BASE --name $NAME --farmer $FLAGS
+ExecStart=$EXEC/$node run --chain $CHAIN --base-path $BASE --name $NAME --farmer --listen-on $LISTEN_NODE --dsn-listen-on $LISTEN_DNS $FLAGS
 Restart=always
 RestartSec=30
 [Install]
@@ -26,7 +26,7 @@ Description=autonomys-farmer
 After=network.target
 [Service]
 User=root
-ExecStart=$EXEC/$farmer farm --reward-address $REWARD $DISKS
+ExecStart=$EXEC/$farmer farm --reward-address $REWARD $DISKS --listen-on $LISTEN_FARMER
 Restart=always
 RestartSec=30
 [Install]
