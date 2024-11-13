@@ -1,15 +1,13 @@
 EXEC=/root/autonomys
-NODE=$(ls $ssexec | grep subspace-node)
-FARMER=$(ls $ssexec | grep subspace-farmer)
-CHAIN=taurus
-API=xxx
-
-NAME=mynode1
-DISKS="path=/media/ssd1,size=100GiB path=/media/ssd2,size=10T path=/media/ssd3,size=10T"
-BASE=/root/subspace1
-SIZE=512G
-PEERS=25
-REWARD=xxx
-PORT=30333
-WS=$(($port+10000))
-RPC="ws://127.0.0.1:"$wsport
+BASE=/root/autonomys
+NETWORK=mainnet
+CHAIN=mainnet
+API=
+NAME=
+DISKS="path=/mnt/ssd1/autonomys-plot-1,size=900GiB"
+#FLAGS=
+REWARD=
+PLOTS=1
+LISTEN_NODE=/ip4/0.0.0.0/tcp/30333
+LISTEN_DNS=/ip4/0.0.0.0/tcp/30433
+LISTEN_FARMER=/ip4/0.0.0.0/tcp/30533
