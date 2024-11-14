@@ -32,10 +32,10 @@ balance=$(curl -s POST 'https://subspace.api.subscan.io/api/scan/account/tokens'
 
 for (( i=0;i<$PLOTS;i++ ))
 do
-  plotted="$plotted $i="$(journalctl -n 10000 -u autonomys-farmer.service --no-hostname -o cat | grep --line-buffered --text "Plotting sector " | grep -a "farm_index="$i | tail -1 | awk -F "Plotting sector " '{print $2}' | awk '{print $1}' | sed 's/(\|)//g' | cut -d . -f 1)%
+  plotted_percent=$(journalctl -n 10000 -u autonomys-farmer.service --no-hostname -o cat | grep --line-buffered --text "Plotting sector " | grep -a "farm_index="$i | tail -1 | awk -F "Plotting sector " '{print $2}' | awk '{print $1}' | sed 's/(\|)//g' | cut -d . -f 1)%
   last_sector_time=$(journalctl -n 10000 -u autonomys-farmer.service --no-hostname -o cat | grep --line-buffered --text "Plotting sector " | grep -a "farm_index="$i | tail -1 | awk '{print $1}')
   last_sector_sec="$(( ( $(date +%s) - $(date -d $last_sector_time +%s) ) / 60 ))m"
-  last_sector="$last_sector $i=$last_sector_sec"
+  plot_info="$last_sector $i=$plotted_percent,$last_sector_sec,"
 
 done
 
@@ -88,8 +88,7 @@ cat >$json << EOF
      "npid":"$npid",
      "peers":"$peers",
      "sync_speed":"$sync_speed", 
-     "plotted":"$plotted",
-     "last_sector":"$last_sector",
+     "plot_info":"$plot_info",
      "bestblock":"$bestblock",
      "currentblock":"$currentblock",
      "balance":"$balance"
