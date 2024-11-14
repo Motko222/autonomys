@@ -89,6 +89,7 @@ cat >$json << EOF
      "peers":"$peers",
      "sync_speed":"$sync_speed", 
      "plotted":"$plotted",
+     "last_sector":"$last_sector",
      "bestblock":"$bestblock",
      "currentblock":"$currentblock",
      "balance":"$balance"
