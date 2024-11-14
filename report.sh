@@ -18,10 +18,6 @@ bestblock=$(curl -s -H "Content-Type: application/json" -d '{"id":1, "jsonrpc":"
 diffblock=$(($bestblock-$currentblock))
 sync_speed=$(journalctl -u autonomys-node.service --no-hostname -o cat | grep -s "Syncing" | tail -1 | awk -F "Syncing" '{print $2}' | awk -F "," '{print $1}')
 
-#plotted0=$(journalctl -n 100 -u autonomys-farmer.service --no-hostname -o cat | grep --line-buffered --text "Plotting sector " | grep -a "farm_index=0" | tail -1 | awk -F "Plotting sector " '{print $2}' | awk '{print $1}' | sed 's/(\|)//g' | cut -d . -f 1)
-#plotted1=$(journalctl -n 100 -u autonomys-farmer.service --no-hostname -o cat | grep --line-buffered --text "Plotting sector " | grep -a "farm_index=1" | tail -1 | awk -F "Plotting sector " '{print $2}' | awk '{print $1}' | sed 's/(\|)//g' | cut -d . -f 1)
-plotted=
-
 rew1=$(journalctl -u autonomys-farmer.service --no-hostname -o cat | grep -a 'Successfully signed reward hash' | grep -c $(date -d "today" '+%Y-%m-%d'))
 rew2=$(journalctl -u autonomys-farmer.service --no-hostname -o cat | grep -a 'Successfully signed reward hash' | grep -c $(date -d "yesterday" '+%Y-%m-%d'))
 rew3=$(journalctl -u autonomys-farmer.service --no-hostname -o cat | grep -a 'Successfully signed reward hash' | grep -c $(date -d "2 days ago" '+%Y-%m-%d'))
@@ -34,9 +30,8 @@ for (( i=0;i<$PLOTS;i++ ))
 do
   plotted_percent=$(journalctl -n 10000 -u autonomys-farmer.service --no-hostname -o cat | grep --line-buffered --text "Plotting sector " | grep -a "farm_index="$i | tail -1 | awk -F "Plotting sector " '{print $2}' | awk '{print $1}' | sed 's/(\|)//g' | cut -d . -f 1)%
   last_sector_time=$(journalctl -n 10000 -u autonomys-farmer.service --no-hostname -o cat | grep --line-buffered --text "Plotting sector " | grep -a "farm_index="$i | tail -1 | awk '{print $1}')
-  last_sector_sec="$(( ( $(date +%s) - $(date -d $last_sector_time +%s) ) / 60 ))m"
-  plot_info="$last_sector $i=$plotted_percent,$last_sector_sec,"
-
+  last_sector_min="$(( ( $(date +%s) - $(date -d $last_sector_time +%s) ) / 60 ))m"
+  plot_info="$plot_info $i=$plotted_percent/$last_sector_min "
 done
 
 [ -z $balance ] && balance="0"
@@ -44,7 +39,7 @@ done
 if [ $diffblock -le 5 ]
   then 
     status="ok"
-    message="plot $plotted rew $rew1-$rew2-$rew3-$rew4 bal $balance"
+    message="plot $plot_info rew $rew1-$rew2-$rew3-$rew4 bal $balance"
   else 
     status="warning"
     message="sync $currentblock/$bestblock speed $sync_speed"; 
