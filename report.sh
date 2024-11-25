@@ -29,14 +29,15 @@ balance=$(curl -s POST 'https://subspace.api.subscan.io/api/scan/account/tokens'
 plotted_percent=$(journalctl -u autonomys-farmer.service --no-hostname -o cat | grep --line-buffered --text "Plotting sector " | grep -a "farm_index="$PLOT_MONITOR | tail -1 | awk -F "Plotting sector " '{print $2}' | awk '{print $1}' | sed 's/(\|)//g' | cut -d . -f 1)%
 last_sector_time=$(journalctl -u autonomys-farmer.service --no-hostname -o cat | grep --line-buffered --text "Plotting sector " | grep -a "farm_index="$PLOT_MONITOR | tail -1 | awk '{print $1}')
 last_sector_min="$(( ( $(date +%s) - $(date -d $last_sector_time +%s) ) / 60 ))m"
-plot_info="$plot_info $i=$plotted_percent/$last_sector_min "
+plot_info="$PLOT_MONITOR=$plotted_percent/$last_sector_min "
 
 [ -z $balance ] && balance="0"
 
 if [ $diffblock -le 5 ]
   then 
     status="ok"
-    message="plot $plot_info rew $rew1-$rew2-$rew3-$rew4 bal $balance"
+    message="rew $rew1-$rew2-$rew3-$rew4 bal $balance"
+    url="plot $plot_info"
   else 
     status="warning"
     message="sync $currentblock/$bestblock speed $sync_speed"; 
