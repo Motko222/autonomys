@@ -75,6 +75,7 @@ cat >$json << EOF
      "version":"$version",
      "status":"$status",
      "message":"$message",
+     "url":"$plot_info",
      "network":"$network",
      "chain":"$chain",
      "fpid":"$fpid",
