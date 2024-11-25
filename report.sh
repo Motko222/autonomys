@@ -26,13 +26,10 @@ version=$(ps aux | grep subspace-node-ubuntu | grep $BASE | awk -F "2024-" '{pri
 balance=$(curl -s POST 'https://subspace.api.subscan.io/api/scan/account/tokens' --header 'Content-Type: application/json' \
  --header 'X-API-Key: '$API'' --data-raw '{ "address": "'$REWARD'" }' | jq -r '.data.native' | jq -r '.[].balance' | awk '{print $1/1000000000000000000}')
 
-for (( i=0;i<$PLOTS;i++ ))
-do
-  plotted_percent=$(journalctl -u autonomys-farmer.service --no-hostname -o cat | grep --line-buffered --text "Plotting sector " | grep -a "farm_index="$i | tail -1 | awk -F "Plotting sector " '{print $2}' | awk '{print $1}' | sed 's/(\|)//g' | cut -d . -f 1)%
-  last_sector_time=$(journalctl -u autonomys-farmer.service --no-hostname -o cat | grep --line-buffered --text "Plotting sector " | grep -a "farm_index="$i | tail -1 | awk '{print $1}')
-  last_sector_min="$(( ( $(date +%s) - $(date -d $last_sector_time +%s) ) / 60 ))m"
-  plot_info="$plot_info $i=$plotted_percent/$last_sector_min "
-done
+plotted_percent=$(journalctl -u autonomys-farmer.service --no-hostname -o cat | grep --line-buffered --text "Plotting sector " | grep -a "farm_index="$PLOT_MONITOR | tail -1 | awk -F "Plotting sector " '{print $2}' | awk '{print $1}' | sed 's/(\|)//g' | cut -d . -f 1)%
+last_sector_time=$(journalctl -u autonomys-farmer.service --no-hostname -o cat | grep --line-buffered --text "Plotting sector " | grep -a "farm_index="$PLOT_MONITOR | tail -1 | awk '{print $1}')
+last_sector_min="$(( ( $(date +%s) - $(date -d $last_sector_time +%s) ) / 60 ))m"
+plot_info="$plot_info $i=$plotted_percent/$last_sector_min "
 
 [ -z $balance ] && balance="0"
 
