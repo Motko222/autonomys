@@ -7,7 +7,7 @@ NAME=
 DISKS="path=/mnt/ssd1/autonomys-plot-1,size=900GiB"
 #FLAGS=
 REWARD=
-PLOTS=1
+PLOT_MONITOR=0
 LISTEN_NODE=/ip4/0.0.0.0/tcp/30333
 LISTEN_DNS=/ip4/0.0.0.0/tcp/30433
 LISTEN_FARMER=/ip4/0.0.0.0/tcp/30533
