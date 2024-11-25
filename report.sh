@@ -23,7 +23,7 @@ rew2=$(journalctl -u autonomys-farmer.service --no-hostname -o cat | grep -a 'Su
 rew3=$(journalctl -u autonomys-farmer.service --no-hostname -o cat | grep -a 'Successfully signed reward hash' | grep -c $(date -d "2 days ago" '+%Y-%m-%d'))
 rew4=$(journalctl -u autonomys-farmer.service --no-hostname -o cat | grep -a 'Successfully signed reward hash' | grep -c $(date -d "3 days ago" '+%Y-%m-%d'))
 version=$(ps aux | grep subspace-node-ubuntu | grep $BASE | awk -F "2024-" '{print $2}' | awk '{print $1}')
-balance=$(curl -s POST 'https://subspace.api.subscan.io/api/scan/account/tokens' --header 'Content-Type: application/json' \
+balance=$(curl -s POST 'https://autonomys.api.subscan.io/api/scan/account/tokens' --header 'Content-Type: application/json' \
  --header 'X-API-Key: '$API'' --data-raw '{ "address": "'$REWARD'" }' | jq -r '.data.native' | jq -r '.[].balance' | awk '{print $1/1000000000000000000}')
 
 plotted_percent=$(journalctl -u autonomys-farmer.service --no-hostname -o cat | grep --line-buffered --text "Plotting sector " | grep -a "farm_index="$PLOT_MONITOR | tail -1 | awk -F "Plotting sector " '{print $2}' | awk '{print $1}' | sed 's/(\|)//g' | cut -d . -f 1)%
