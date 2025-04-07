@@ -34,33 +34,11 @@ plot_info="$PLOT_MONITOR=$plotted_percent/$last_sector_min "
 
 [ -z $balance ] && balance="0"
 
-if [ $diffblock -le 5 ]
-  then 
-    status="ok"
-    message="rew $rew1-$rew2-$rew3-$rew4 bal $balance"
-    url="plot $plot_info"
-  else 
-    status="warning"
-    message="sync $currentblock/$bestblock speed $sync_speed"; 
-fi
-
-if [ $bestblock -eq 0 ]
-  then 
-    status="warning"
-    message="cannot fetch network height"
-fi
-
-if [ -z $fpid ]
-  then 
-    status="warning"
-    message="farmer not running, sync $currentblock/$bestblock, $sync_speed"
-fi
-
-if [ -z $npid ]
-  then 
-    status="error"
-    message="node not running"
-fi
+status="ok" && message="rew $rew1-$rew2-$rew3-$rew4 bal $balance"
+[ $diffblock -gt 5 ] && status="warning" && message="sync $currentblock/$bestblock speed $sync_speed"
+[ $bestblock -eq 0 ] && status="warning" && message="cannot fetch network height"
+[ -z $fpid ] && status="warning" && message="farmer not running, sync $currentblock/$bestblock, $sync_speed"
+[ -z $npid ] && status="error" && message="node not running"
 
 cat >$json << EOF
 {
