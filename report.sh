@@ -35,6 +35,7 @@ plot_info="$PLOT_MONITOR=$plotted_percent/$last_sector_min "
 [ -z $balance ] && balance="0"
 
 status="ok" && message="rew $rew1-$rew2-$rew3-$rew4 bal $balance"
+[ $errors -gt 1000 ] && status="warning" && message="errors=$errors"
 [ $diffblock -gt 5 ] && status="warning" && message="sync $currentblock/$bestblock speed $sync_speed"
 [ $bestblock -eq 0 ] && status="warning" && message="cannot fetch network height"
 [ -z $fpid ] && status="warning" && message="farmer not running, sync $currentblock/$bestblock, $sync_speed"
