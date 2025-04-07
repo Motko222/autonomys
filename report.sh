@@ -22,6 +22,7 @@ rew1=$(journalctl -u autonomys-farmer.service --no-hostname -o cat | grep -a 'Su
 rew2=$(journalctl -u autonomys-farmer.service --no-hostname -o cat | grep -a 'Successfully signed reward hash' | grep -c $(date -d "yesterday" '+%Y-%m-%d'))
 rew3=$(journalctl -u autonomys-farmer.service --no-hostname -o cat | grep -a 'Successfully signed reward hash' | grep -c $(date -d "2 days ago" '+%Y-%m-%d'))
 rew4=$(journalctl -u autonomys-farmer.service --no-hostname -o cat | grep -a 'Successfully signed reward hash' | grep -c $(date -d "3 days ago" '+%Y-%m-%d'))
+errors=$(journalctl -u autonomys-farmer.service --no-hostname -o cat | grep -a -E 'rror|ERR' | grep -c $(date -d "today" '+%Y-%m-%d'))
 version=$(ps aux | grep subspace-node-ubuntu | grep $BASE | awk -F "2025-" '{print $2}' | awk '{print $1}')
 balance=$(curl -s POST 'https://autonomys.api.subscan.io/api/scan/account/tokens' --header 'Content-Type: application/json' \
  --header 'X-API-Key: '$API'' --data-raw '{ "address": "'$REWARD'" }' | jq -r '.data.native' | jq -r '.[].balance' | awk '{print $1/1000000000000000000}')
@@ -85,7 +86,8 @@ cat >$json << EOF
      "plot_info":"$plot_info",
      "bestblock":"$bestblock",
      "currentblock":"$currentblock",
-     "balance":"$balance"
+     "balance":"$balance",
+     "errors":"$errors"
   }
 }
 EOF
